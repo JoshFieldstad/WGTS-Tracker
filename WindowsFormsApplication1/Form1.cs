@@ -18,7 +18,7 @@ namespace WindowsFormsApplication1
         bool typeS, textF, monthS;
         string database;
 
-        DateTime date;
+        bool haltTime = false;
 
         DispatcherTimer timer = new DispatcherTimer();
 
@@ -85,7 +85,7 @@ namespace WindowsFormsApplication1
                 data.ConnectionString = builder.ToString();
                 data.Open();
 
-
+                haltTime = true;
 
                 cmd = new OleDbCommand();
 
@@ -106,6 +106,7 @@ namespace WindowsFormsApplication1
                 textBox1.ResetText();
                 textBox2.ResetText();
                 MessageBox.Show("Pledge has been saved. Pledge ID is: " + returnValue.ToString());
+                haltTime = false;
 
             }
             else if (monthS == false)
@@ -127,8 +128,8 @@ namespace WindowsFormsApplication1
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-
-                textBox4.Text = DateTime.Now.ToString("h:mm:ss tt");
+                DateTime dt1 = DateTime.Now.AddHours(-1);
+                textBox4.Text = dt1.ToString("h:mm:ss tt");
 
         }
 
@@ -215,13 +216,26 @@ namespace WindowsFormsApplication1
         }
 
         private void label2_Click(object sender, EventArgs e)
-        {
+        { 
 
         }
 
         void timer_Tick(object sender, object e)
         {
-            textBox4.Text = DateTime.Now.ToString("h:mm:ss tt");
+            if (checkBox1.Checked == true & haltTime == false)
+            {
+                DateTime dt1 = DateTime.Now.AddHours(-1);
+                textBox4.Text = dt1.ToString("h:mm:ss tt");
+            }
+            else if (checkBox1.Checked == false & haltTime == false)
+            {
+                textBox4.Text = DateTime.Now.ToString("h:mm:ss tt");
+            }
+            else
+            {
+                return;
+            }
+            
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.OleDb;
+using System.Windows.Threading;
 
 namespace WindowsFormsApplication1
 {
@@ -18,10 +20,14 @@ namespace WindowsFormsApplication1
 
         DateTime date;
 
+        DispatcherTimer timer = new DispatcherTimer();
+
         System.Data.OleDb.OleDbConnectionStringBuilder builder;
         OleDbConnection data;
         OleDbCommand cmd;
         OleDbDataReader reader;
+
+
 
         public Form1()
         {
@@ -29,7 +35,10 @@ namespace WindowsFormsApplication1
             InitializeComponent();
             textBox3.Text = DateTime.Today.ToString("dd/MM/yyyy");
             textBox4.Text = DateTime.Now.ToString("h:mm:ss tt");
-            
+
+            timer.Interval = new TimeSpan(0, 0, 1);
+            timer.Tick += timer_Tick;
+            timer.Start();
 
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
@@ -123,6 +132,13 @@ namespace WindowsFormsApplication1
 
         }
 
+        /*
+         *
+         *This method is automatically called when the contents of the amount box is changed
+         *it calculates thevalue of the monthly ammount based on wether montly or single is chosen in combobox1
+         * 
+         */
+
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             int j;
@@ -141,11 +157,14 @@ namespace WindowsFormsApplication1
             }
             else if (result == false & contents == false)
             {
+                //throws an error if there is text or non numeric characturs in the amount box
                 MessageBox.Show("Please enter only numbers in 'Amount' box.");
             }
             else
             {
+                //if textbox1 is blank set textbox 2 to zero
                 textBox2.Text = "0";
+                return;
             }
             textF = true;
 
@@ -198,6 +217,11 @@ namespace WindowsFormsApplication1
         private void label2_Click(object sender, EventArgs e)
         {
 
+        }
+
+        void timer_Tick(object sender, object e)
+        {
+            textBox4.Text = DateTime.Now.ToString("h:mm:ss tt");
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)

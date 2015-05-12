@@ -69,15 +69,12 @@ namespace WindowsFormsApplication1
 
         }
 
-
-
-        private void button1_Click(object sender, EventArgs e)
+        private void save()
         {
-            
-            if ( textF == true & monthS == true)
+            if (textF == true & monthS == true)
             {
 
-                
+
                 int index = comboBox1.SelectedIndex + 1;
                 data = new OleDbConnection();
                 Object returnValue;
@@ -90,21 +87,18 @@ namespace WindowsFormsApplication1
                 cmd = new OleDbCommand();
 
                 cmd.CommandText = ("INSERT into Pledges (Sharathon_ID, Sponsor_Type, Amount, TotalAmount, PledgeDate) VALUES (" +
-                                "'27','" + index.ToString() + "','" + textBox1.Text + "','" + textBox2.Text + "','" + DateTime.Today.ToString("MM/dd/yyyy") + " " + textBox4.Text + "')");
+                                "'27','" + index.ToString() + "','" + string.Format("{0:N2}", textBox1.Text) + "','" + textBox2.Text + "','" + DateTime.Today.ToString("MM/dd/yyyy") + " " + textBox4.Text + "')");
                 cmd.Connection = data;
 
                 cmd.ExecuteNonQuery();
 
-                cmd.CommandText = ("SELECT Pledge_ID, TotalAmount, PledgeDate from Pledges where TotalAmount = " + textBox2.Text + " and PledgeDate = #" + DateTime.Today.ToString("MM/dd/yyyy") + " " + textBox4.Text + "#" );
+                cmd.CommandText = ("SELECT Pledge_ID, TotalAmount, PledgeDate from Pledges where TotalAmount = " + textBox2.Text + " and PledgeDate = #" + DateTime.Today.ToString("MM/dd/yyyy") + " " + textBox4.Text + "#");
 
                 returnValue = cmd.ExecuteScalar();
 
                 data.Close();
 
-                comboBox1.ResetText();
-                comboBox2.ResetText();
-                textBox1.ResetText();
-                textBox2.ResetText();
+                clear();
                 MessageBox.Show("Pledge has been saved. Pledge ID is: " + returnValue.ToString());
                 haltTime = false;
 
@@ -122,7 +116,27 @@ namespace WindowsFormsApplication1
                 MessageBox.Show("Please select New/Renewal");
             }
 
+        }
 
+        private void clear()
+        {
+            comboBox1.ResetText();
+            comboBox2.ResetText();
+            textBox1.ResetText();
+            textBox2.ResetText();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+            save();
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+            clear();
 
         }
 
@@ -142,18 +156,20 @@ namespace WindowsFormsApplication1
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            int j;
+
+            double trimed;
             bool contents = textBox1.Text == "";
-            bool result = Int32.TryParse(textBox1.Text, out j);
+            bool result = Double.TryParse(textBox1.Text, out trimed);
+
             if (result == true & contents == false)
             {
                 if (comboBox1.SelectedIndex == 0)
                 {
-                    textBox2.Text = Convert.ToString(j * 12);
+                    textBox2.Text = Convert.ToString(trim((trimed * 12), 2));
                 } 
                 else
                 {
-                    textBox2.Text = Convert.ToString(j);
+                    textBox2.Text = Convert.ToString(trim(trimed,2));
                 }
             }
             else if (result == false & contents == false)
@@ -210,16 +226,6 @@ namespace WindowsFormsApplication1
             typeS = true;
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        { 
-
-        }
-
         void timer_Tick(object sender, object e)
         {
             if (checkBox1.Checked == true & haltTime == false)
@@ -238,9 +244,10 @@ namespace WindowsFormsApplication1
             
         }
 
-        private void pictureBox1_Click(object sender, EventArgs e)
+        private double trim(double v, double n)
         {
-
+            double p = Math.Pow(10, n);
+            return (Math.Round(v * p)) / p;
         }
 
     }
